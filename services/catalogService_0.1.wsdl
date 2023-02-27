@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="catalogService"
+		xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+		xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		xmlns:tns="http://www.talend.org/service/"
+		targetNamespace="http://www.talend.org/service/">
+
+	<wsdl:types>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://www.talend.org/service/">
+			<xsd:element name="catalogServiceOperationRequest">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="bookID" type="xsd:string"></xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="catalogServiceOperationResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="title" type="xsd:string"></xsd:element>
+						<xsd:element name="author" type="xsd:string">
+						</xsd:element>
+						<xsd:element name="publisher"
+							type="xsd:string">
+						</xsd:element>
+						<xsd:element name="releaseDate"
+							type="xsd:string">
+						</xsd:element>
+						<xsd:element name="pages" type="xsd:string">
+						</xsd:element>
+						<xsd:element name="price"
+							type="xsd:string">
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:schema>
+	</wsdl:types>
+
+	<wsdl:message name="catalogServiceOperationRequest">
+		<wsdl:part name="parameters" element="tns:catalogServiceOperationRequest"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="catalogServiceOperationResponse">
+		<wsdl:part name="parameters" element="tns:catalogServiceOperationResponse"></wsdl:part>
+	</wsdl:message>
+
+	<wsdl:portType name="catalogServicePortType">
+		<wsdl:operation name="catalogServiceOperation">
+			<wsdl:input message="tns:catalogServiceOperationRequest"></wsdl:input>
+			<wsdl:output message="tns:catalogServiceOperationResponse"></wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<wsdl:binding name="catalogServiceBinding" type="tns:catalogServicePortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="catalogServiceOperation">
+			<soap:operation soapAction="http://www.talend.org/service/catalogServiceOperation" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+
+	<wsdl:service name="catalogService">
+		<wsdl:port name="catalogServicePort" binding="tns:catalogServiceBinding">
+			<soap:address location="http://localhost:8090/services/catalogService" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>
