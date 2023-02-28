@@ -18,7 +18,15 @@ package beans;
  * 
  * 5. {example} gives a example for the Function. it is optional.
  */
-public class __TEMPLATE__ {
+
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.GZIPOutputStream;
+
+public class compressGzip {
 
     /**
      * helloExample: not return value, only print "hello" + message.
@@ -32,10 +40,58 @@ public class __TEMPLATE__ {
      * 
      * {example} helloExemple("world") # hello world !.
      */
-    public static void helloExample(String message) {
-        if (message == null) {
-            message = "World"; //$NON-NLS-1$
-        }
-        System.out.println("Hello " + message + " !"); //$NON-NLS-1$ //$NON-NLS-2$
-    }
+	public static Map<String, byte[]> compressString(String input, String acceptEncodingHeader) {
+	    byte[] inputData = input.getBytes();
+	    Map<String, byte[]> compressedData = new HashMap<>();
+
+	    if (acceptEncodingHeader != null) {
+	        String[] encodings = acceptEncodingHeader.split("\\s*,\\s*");
+
+	        for (String encoding : encodings) {
+	            String[] parts = encoding.split("\\s*;\\s*q=\\s*");
+
+	            String scheme = parts[0].trim().toLowerCase();
+	            float qValue = 1.0f;
+
+	            if (parts.length > 1) {
+	                try {
+	                    qValue = Float.parseFloat(parts[1]);
+	                } catch (NumberFormatException e) {
+	                    // Ignore invalid q-values
+	                }
+	            }
+
+	            if (scheme.equals("br") && qValue > 0) {
+	                byte[] compressed = compressData(inputData, Deflater.BEST_COMPRESSION);
+	                compressedData.put("br", compressed);
+	            } else if (scheme.equals("gzip") && qValue > 0) {
+	                byte[] compressed = compressData(inputData, Deflater.DEFAULT_COMPRESSION);
+	                compressedData.put("gzip", compressed);
+	            }
+	        }
+	    }
+
+	    if (compressedData.isEmpty()) {
+	        // No encoding schemes were specified or supported, so use default compression
+	        byte[] compressed = compressData(inputData, Deflater.DEFAULT_COMPRESSION);
+	        compressedData.put("gzip", compressed);
+	    }
+
+	    return compressedData;
+	}
+
+	private static byte[] compressData(byte[] data, int compressionLevel) {
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	    Deflater deflater = new Deflater(compressionLevel);
+	    DeflaterOutputStream dos = new DeflaterOutputStream(baos, deflater);
+
+	    try {
+	        dos.write(data);
+	        dos.close();
+	    } catch (Exception e) {
+	        // Handle compression errors
+	    }
+
+	    return baos.toByteArray();
+	}
 }
