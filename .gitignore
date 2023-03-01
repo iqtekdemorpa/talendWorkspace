@@ -1,3 +1,8 @@
 .JETEmitters
 .metadata
 /temp
+/sqlPatterns
+.settings
+/code/routines/system
+/temp
+/code
